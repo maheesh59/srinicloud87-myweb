@@ -1,33 +1,36 @@
-try{
-	node{
-	    properties([parameters([choice(choices: ['master', 'dev', 'qa', 'staging'], description: 'Choose branch to build and deploy', name: 'gitBranch')]), pipelineTriggers([pollSCM('')])])
-    stage('Git Checkout'){
-		git credentialsId: 'github', 
-		    url: 'https://github.com/javahometech/my-app',
-			branch: "${params.gitBranch}"
-	}
-	
-	stage('Maven Build'){
-		sh 'mvn clean package'
-	}
-	stage('Deploy to Dev'){
-		sh 'mv target/*.war target/myweb.war'
-		sshagent(['tomcat-dev']) {
-			sh 'ssh ec2-user@172.31.17.196 rm -rf /opt/tomcat8/webapps/myweb*'
-		    sh 'scp target/myweb.war ec2-user@172.31.17.196:/opt/tomcat8/webapps/'
-		    sh 'ssh ec2-user@172.31.17.196 sudo service tomcat restart'
-		}
-	    slackSend channel: '#devops-2',
-				  color: 'good',
-				  message: "Job -  ${env.JOB_NAME}, Completed successfully Build URL is ${env.BUILD_URL}"
-
-
-	}
+pipeline{
+    agent any
+    
+    environment{
+        PATH = "/opt/maven3/bin:$PATH"
+    }
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git credentialsId: 'javahome2', url: 'https://github.com/srinicloud87/myweb.git'
+            }
+        }
+        stage("Maven Build"){
+            steps{
+                sh "mvn clean package"
+                sh "mv target/*.war target/myweb.war"
+            }
+        }
+        stage("deploy-dev"){
+            steps{
+                sshagent(['tomcat-new']) {
+                sh """
+                    scp -o StrictHostKeyChecking=no target/myweb.war  ec2-user@172.31.37.202:/home/ec2-user/apache-tomcat-9.0.68/webapps/
+                    
+                    ssh ec2-user@172.31.37.202 /home/ec2-user/apache-tomcat-9.0.68/bin/shutdown.sh
+                    
+                    ssh ec2-user@172.31.37.202 /home/ec2-user/apache-tomcat-9.0.68/bin/startup.sh
+                
+                """
+            }
+            
+            }
+        }
+    }
 }
 
-}catch(error){
-  slackSend channel: '#devops-2',
-				  color: 'danger',
-				  message: "Job -  ${env.JOB_NAME}, Failed, Build URL is ${env.BUILD_URL}"
-   error 'Something wrong'
-}
