@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: sample-app
-        image: maheesh1/sample-web:latest
+        image: maheesh1/sample-web:6
         imagePullPolicy: "Always"
         ports:
         - containerPort: 3000
