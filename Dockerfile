@@ -1,15 +1,11 @@
-# Use a lightweight Java 21 runtime image (matches your Jenkins configuration)
+# Use the same JDK version as your Maven build
 FROM eclipse-temurin:21-jre-alpine
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the compiled JAR file from the target directory into the container
-# The wildcard *.jar ensures it grabs the file regardless of its exact version name
-COPY target/*.jar app.jar
+# Changed from *.jar to *.war to match your pom.xml packaging
+COPY target/*.war app.jar
 
-# Expose the port your application uses (8080 is the standard for Java/Spring Boot)
 EXPOSE 8080
 
-# The command to execute when the container starts
 ENTRYPOINT ["java", "-jar", "app.jar"]
