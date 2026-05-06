@@ -1,9 +1,9 @@
-# Use the same JDK version as your Maven build
+# Use a base image with Java 21
 FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Changed from *.jar to *.war to match your pom.xml packaging
+# Match the exact .war extension found in your target folder
 COPY target/*.war app.jar
 
 EXPOSE 8080
