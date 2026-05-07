@@ -5,24 +5,19 @@
     
     <groupId>in.javahome</groupId>
     <artifactId>myweb</artifactId>
-    <packaging>war</packaging>
-    <version>8.2.0</version>
+    <packaging>jar</packaging> <version>8.2.0</version>
     <name>Java Home myweb</name>
     <url>http://maven.apache.org</url>
     
     <properties>
-        <!-- Java Version - Matching your Jenkins Tool 'java21' -->
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
-        <!-- Other Properties -->
         <docker.image.prefix>kammana</docker.image.prefix>
         <sonar.host.url>http://13.230.181.236:9000/</sonar.host.url>
     </properties>
 
     <dependencies>
-        <!-- Updated JUnit to 4.13.2 for better compatibility with Java 21 -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -33,7 +28,6 @@
     
     <build>
         <plugins>
-            <!-- Explicitly defining the compiler plugin for stability -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -44,11 +38,17 @@
                 </configuration>
             </plugin>
             
-            <!-- War plugin to handle the packaging -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.4.0</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -58,7 +58,6 @@
             <id>nexusRepo</id>
             <url>http://35.78.238.154:8081/repository/sample-snapshots/</url>
         </snapshotRepository>
-        
         <repository>
             <id>nexusRepo</id>
             <url>http://35.78.238.154:8081/repository/sample-releases/</url>
